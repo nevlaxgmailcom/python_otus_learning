@@ -10,6 +10,8 @@ import pytest
                           (1.5, 7.065, 9.42)
                           ])
 def test_circle(radius, area, perimeter):
+    """Проверка вычисления площади, периметра фигуры Circle"""
+
     c = Circle(radius)
     assert c.name == f'Circle с радиусом {radius}'
     assert c.area == area
@@ -20,6 +22,8 @@ def test_circle(radius, area, perimeter):
                          [-1, 0, '-1', [0]
                           ])
 def test_circle_negative(radius):
+    """Проверка исключения при невозможности создания фигуры Circle"""
+
     with pytest.raises(ValueError) as e:
         c = Circle(radius)
         assert c.name == f'Circle с радиусом {radius}'
@@ -31,6 +35,8 @@ def test_circle_negative(radius):
                           (1.5, 2.5, 3.75, 8)
                           ])
 def test_rectangle(side_a, side_b, area, perimeter):
+    """Проверка вычисления площади, периметра фигуры Rectangle"""
+
     r = Rectangle(side_a, side_b)
     assert r.name == f'Rectangle со сторонами {side_a} и {side_b}'
     assert r.area == area
@@ -43,6 +49,8 @@ def test_rectangle(side_a, side_b, area, perimeter):
                           ('0', {"side_b": 0})
                           ])
 def test_rectangle_negative(side_a, side_b):
+    """Проверка исключения при невозможности создания фигуры Rectangle"""
+
     with pytest.raises(ValueError) as e:
         r = Rectangle(side_a, side_b)
         assert r.name == f'Rectangle со сторонами {side_a} и {side_b}'
@@ -54,6 +62,8 @@ def test_rectangle_negative(side_a, side_b):
                           (1.5, 2.25, 6)
                           ])
 def test_square(side, area, perimeter):
+    """Проверка вычисления площади, периметра фигуры Square"""
+
     s = Square(side)
     assert s.name == f'Square со стороной {side}'
     assert s.area == area
@@ -64,6 +74,8 @@ def test_square(side, area, perimeter):
                          [-1, 0, '12', [1, 2]
                           ])
 def test_square_negative(side):
+    """Проверка исключения при невозможности создания фигуры Square"""
+
     with pytest.raises(ValueError) as e:
         s = Square(side)
         assert s.name == f'Square со стороной {side}'
@@ -75,6 +87,8 @@ def test_square_negative(side):
                           (1.5, 2.5, 3.75, 1.257691182037546, 7.75)
                           ])
 def test_triangle(side_a, side_b, side_c, area, perimeter):
+    """Проверка вычисления площади, периметра фигуры Triangle"""
+
     t = Triangle(side_a, side_b, side_c)
     assert t.name == f'Triangle со сторонами ' \
                      f'{side_a}, {side_b}, {side_c}'
@@ -89,6 +103,8 @@ def test_triangle(side_a, side_b, side_c, area, perimeter):
                           ('1', [2], 3)
                           ])
 def test_triangle_negative(side_a, side_b, side_c):
+    """Проверка исключения при невозможности создания фигуры Triangle"""
+
     with pytest.raises(ValueError) as e:
         t = Triangle(side_a, side_b, side_c)
         assert t.name == f'Triangle со сторонами ' \
@@ -96,25 +112,31 @@ def test_triangle_negative(side_a, side_b, side_c):
     assert f'Triangle создать нельзя' == str(e.value)
 
 
-def test_add_area():
-    c = Circle(2)
-    r = Rectangle(2, 5)
-    s = Square(5)
-    t = Triangle(1, 2, 2.5)
-    assert c.add_area(r) == 22.560000000000002
-    assert r.add_area(s) == 35
-    assert s.add_area(t) == 25.949917759598165
-    assert t.add_area(c) == 13.509917759598167
+@pytest.mark.parametrize(("fig_a", "fig_b", "result"),
+                         [(Circle(2), Rectangle(2, 5), 22.560000000000002),
+                          (Rectangle(2, 5), Square(5), 35),
+                          (Square(5), Triangle(1, 2, 2.5), 25.949917759598165),
+                          (Triangle(1, 2, 2.5), Circle(2), 13.509917759598167)
+                          ])
+def test_add_area(fig_a, fig_b, result):
+    """Проверка вычисления суммы площадей двух геометрических фигур"""
+
+    a = fig_a
+    b = fig_b
+    assert a.add_area(b) == result
 
 
-def test_add_area_negative():
+@pytest.mark.parametrize(("fig_a", "fig_b"),
+                         [(Circle(2), 25),
+                          (Rectangle(2, 5), 's'),
+                          (Square(5), [15]),
+                          (Triangle(1, 2, 2.5), {"c": 15})
+                          ])
+def test_add_area_negative(fig_a, fig_b):
+    """Проверка исключения вычисления суммы площадей двух фигур, если передана не фигура"""
+
     with pytest.raises(ValueError) as e:
-        c = Circle(2)
-        r = Rectangle(2, 5)
-        s = Square(5)
-        t = Triangle(1, 2, 2.5)
-        assert c.add_area(25) == 22.560000000000002
-        assert r.add_area('s') == 35
-        assert s.add_area([t]) == 25.949917759598165
-        assert t.add_area({c}) == 13.509917759598167
+        a = fig_a
+        b = fig_b
+        assert a.add_area(b)
     assert f'Передана не геометрическая фигура' == str(e.value)
