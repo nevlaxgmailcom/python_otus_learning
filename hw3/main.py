@@ -6,7 +6,7 @@ users_file = 'users.json'
 result_file = 'result.json'
 
 
-def get_book():
+def get_books():
     try:
         with open(books_file, "r", encoding="utf-8") as f:
             books_raw = csv.DictReader(f)
@@ -59,7 +59,7 @@ def write_result(result):
 
 
 def main():
-    r = distribute_books(get_users(), get_book())
+    r = distribute_books(get_users(), get_books())
     write_result(r)
 
 
