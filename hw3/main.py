@@ -21,8 +21,14 @@ def get_users():
         with open(users_file, "r", encoding="utf-8") as f:
             users_raw = json.loads(f.read())
             keys = ("name", "gender", "address", "age")
-            users = [dict(filter(lambda key: key[0] in keys, row.items())) for row in users_raw]
-            list(map(lambda d: d.update({"books": []}), users))
+            # users = [dict(filter(lambda key: key[0] in keys, row.items())) for row in users_raw]
+            # list(map(lambda d: d.update({"books": []}), users))
+            users = []
+            for user_data in users_raw:
+                user = {key: val for key, val in user_data.items() if key in keys}
+                users.append(
+                    user | {'books': []}
+                )
             return users
     except (Exception, IOError) as e:
         print(e)
@@ -32,24 +38,24 @@ def distribute_books(users, books):
     if isinstance(users, list) and isinstance(books, list):
         i = 0
         while i < len(books):
-            for index, user in enumerate(users):
+            for user in users:
                 user["books"].append(books[i])
-                users[index]["books"] = user["books"]
                 i += 1
                 if i == len(books):
                     break
         return users
-    return
 
 
 def write_result(result):
     if isinstance(result, list):
         try:
-            f = open(result_file, "w", encoding="utf-8")
-            f.write(json.dumps(result, indent=4, ensure_ascii=False))
-            f.close()
+            with open(result_file, "w", encoding="utf-8") as f:
+                f.write(json.dumps(result, indent=4, ensure_ascii=False))
+            print(f'Файл {result_file} создан')
         except (Exception, IOError) as e:
             print(e)
+    else:
+        print(f'Файл {result_file} не создан')
 
 
 def main():
